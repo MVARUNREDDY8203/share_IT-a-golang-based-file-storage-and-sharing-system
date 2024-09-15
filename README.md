@@ -162,14 +162,17 @@ shareit/
 ## 🔗 API Endpoints
 
 | Method | Endpoint | Description | Authentication | Payload | Response |
-|--------|----------|-------------|----------------|---------|----------|
-| POST | `/signup` | User registration | No | {email, password} | Successful id creation message |
-| POST | `/login` | User login | No | {email, password} | JWT token |
+|--------|----------|-------------|----------------|-------|------|
+| POST | `/signup` | User registration | No | {email, password} | successful id creation message |
+| POST | `/login` | User login | No | {email, password} | jwt_token |
 | POST | `/files/upload` | Upload a file | Yes | file - {chosen file} | {message, public_url} |
+
+| Method | Endpoint | Description | Authentication | Query | Response |
+|--------|----------|-------------|----------------|-------|------|
 | GET | `/files/search` | Search for files | Yes | nil/ file_id/ file_name/ file_type | {file_id, name, path, user_id, created_at} |
-| DELETE | `/files/delete` | Delete a file | Yes | file_id | Response message |
-| GET | `/files/share` | Get a shareable link | Yes | file_id | Public URL |
-| GET | `/files/access/{file_id}` | Serve file | No | file_id | Decrypted file requested |
+| DELETE | `/files/delete` | Delete a file | Yes | file_id | response message |
+| GET | `/files/share` | Get a shareable link | Yes | file_id | public_url |
+| GET | `/files/access/{file_id}` | Serves public_url of files | No | file_id | decrypted_file_requested |
 
 ## 🛡️ Security Features
 
