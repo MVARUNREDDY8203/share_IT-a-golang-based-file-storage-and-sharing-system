@@ -7,6 +7,7 @@ import (
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 )
 
 var DB *sql.DB
@@ -14,6 +15,12 @@ var DB *sql.DB
 // ConnectDB initializes the MySQL database connection
 func ConnectDB() {
     var err error
+    err = godotenv.Load()
+    if err != nil {
+        log.Println("No .env file found, continuing...")
+    }
+
+    
     dbUser := os.Getenv("DB_USER")
     dbPassword := os.Getenv("DB_PASSWORD")
     dbName := os.Getenv("DB_NAME")
