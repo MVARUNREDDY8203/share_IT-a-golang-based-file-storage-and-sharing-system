@@ -1,4 +1,4 @@
-module sendit
+module shareit
 
 go 1.23.1
 

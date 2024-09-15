@@ -22,7 +22,7 @@ RUN go mod download
 COPY . .
 
 # Build the Go app
-RUN go build -o sendit ./main.go
+RUN go build -o shareit ./main.go
 
 # Build the background worker
 RUN go build -o worker ./background_worker/worker.go
@@ -37,7 +37,7 @@ RUN apk add --no-cache bash mysql-client mysql mysql-server
 WORKDIR /app
 
 # Copy the built binaries from the builder stage
-COPY --from=builder /app/sendit /app/worker /app/
+COPY --from=builder /app/shareit /app/worker /app/
 
 # Copy the init.sql file to set up the database schema
 COPY init.sql /docker-entrypoint-initdb.d/
@@ -46,7 +46,7 @@ COPY init.sql /docker-entrypoint-initdb.d/
 ENV DB_USER="root"
 ENV DB_PASSWORD="root"
 ENV DB_HOST="localhost"
-ENV DB_NAME="sendit_go"
+ENV DB_NAME="shareit"
 ENV REDIS_URL="rediss://default:AYGsAAIjcDE2MmFmN2MwM2M2NzA0YWMzYjhhODM2N2MzMzgxMjhiN3AxMA@complete-feline-33196.upstash.io:6379"
 
 # Expose the port that the Go app runs on
@@ -56,4 +56,4 @@ EXPOSE 8080
 RUN mkdir /var/lib/mysql && chown -R mysql:mysql /var/lib/mysql && mysql_install_db --user=mysql
 
 # Start MySQL, then run the app and background worker
-CMD ["sh", "-c", "mysqld --init-file=/docker-entrypoint-initdb.d/init.sql & sleep 5 && ./sendit & ./worker"]
+CMD ["sh", "-c", "mysqld --init-file=/docker-entrypoint-initdb.d/init.sql & sleep 5 && ./shareit & ./worker"]

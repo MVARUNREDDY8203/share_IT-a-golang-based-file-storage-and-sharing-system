@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"sendit/db" // Update this import path based on your actual module path
+	"shareit/db" // Update this import path based on your actual module path
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"

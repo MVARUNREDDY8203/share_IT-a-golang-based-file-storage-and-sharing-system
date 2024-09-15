@@ -12,7 +12,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"sendit/db"
+	"shareit/db"
 	"time"
 )
 

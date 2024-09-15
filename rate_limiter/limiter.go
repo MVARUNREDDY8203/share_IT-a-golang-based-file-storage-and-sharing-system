@@ -1,7 +1,7 @@
 package ratelimiter
 
 import (
-	"sendit/db"
+	"shareit/db"
 	"strconv"
 	"time"
 )

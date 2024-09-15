@@ -7,7 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"sendit/db"
+	"shareit/db"
 	"time"
 
 	"github.com/gorilla/mux"

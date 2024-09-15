@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 	"net/http"
-	"sendit/auth"
-	"sendit/db"
-	"sendit/files"
+	"shareit/auth"
+	"shareit/db"
+	"shareit/files"
 
 	"github.com/gorilla/mux"
 )
