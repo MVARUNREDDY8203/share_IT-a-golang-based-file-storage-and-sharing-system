@@ -14,7 +14,8 @@ ShareIt: a robust and secure file sharing service built with Go, designed to pro
 - [API Endpoints](#-api-endpoints)
 - [Security Features](#️-security-features)
 - [Bonus Tasks Completed](#bonus-tasks-completed)
-
+- [Project Functionality / Documentation](#Project-Functionality-Documentation)
+  - [](Login-SignUp--JWT-Authentication)
 ## 🌟 Features
 
 - User registration and authentication
