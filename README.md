@@ -1,7 +1,3 @@
-Here’s the updated documentation for your ShareIt project, including the sections after the "Project Functionality" with a comprehensive overview:
-
----
-
 # [ShareIt: Secure File Sharing Service](youtube.com) 🚀
 
 ShareIt: a robust and secure file sharing service built with Go, designed to provide users with a safe and efficient way to upload, store, and share files.
