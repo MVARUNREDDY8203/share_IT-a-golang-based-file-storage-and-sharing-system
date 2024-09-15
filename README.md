@@ -1,4 +1,4 @@
-# [ShareIt: Secure File Sharing Service](https://youtu.be/IJ_FZvZxCK8)) 🚀
+# [ShareIt: Secure File Sharing Service](https://youtu.be/IJ_FZvZxCK8) 🚀
 
 ### [demonstration of working - video](https://youtu.be/IJ_FZvZxCK8)
 
