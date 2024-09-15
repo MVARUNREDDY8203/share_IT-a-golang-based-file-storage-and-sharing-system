@@ -1,3 +1,7 @@
+Here’s the updated documentation for your ShareIt project, including the sections after the "Project Functionality" with a comprehensive overview:
+
+---
+
 # [ShareIt: Secure File Sharing Service](youtube.com) 🚀
 
 ShareIt: a robust and secure file sharing service built with Go, designed to provide users with a safe and efficient way to upload, store, and share files.
@@ -14,8 +18,13 @@ ShareIt: a robust and secure file sharing service built with Go, designed to pro
 - [API Endpoints](#-api-endpoints)
 - [Security Features](#️-security-features)
 - [Bonus Tasks Completed](#bonus-tasks-completed)
-- [Project Functionality / Documentation](#Project-Functionality-Documentation)
-  - [](Login-SignUp--JWT-Authentication)
+- [Project Functionality / Documentation](#project-functionality--documentation)
+  - [Login/SignUp - JWT Authentication](#loginsignup--jwt-authentication)
+  - [Database: SQL Schema](#database-sql-schema)
+  - [File Storage and Management](#file-storage-and-management)
+  - [Redis Layer](#redis-layer)
+  - [Background Worker](#background-worker)
+
 ## 🌟 Features
 
 - User registration and authentication
@@ -23,7 +32,7 @@ ShareIt: a robust and secure file sharing service built with Go, designed to pro
 - File search functionality
 - Easy file sharing via public URLs
 - Caching layer for file metadata
-- Automatic file deletion on file expiry using a background_worker
+- Automatic file deletion on file expiry using a background worker
 - Rate limiting using Redis to prevent abuse
 
 ## 🛠️ Technologies Used
@@ -157,17 +166,14 @@ shareit/
 ## 🔗 API Endpoints
 
 | Method | Endpoint | Description | Authentication | Payload | Response |
-|--------|----------|-------------|----------------|-------|------|
-| POST | `/signup` | User registration | No | {email, password} | successful id creation message |
-| POST | `/login` | User login | No | {email, password} | jwt_token |
+|--------|----------|-------------|----------------|---------|----------|
+| POST | `/signup` | User registration | No | {email, password} | Successful id creation message |
+| POST | `/login` | User login | No | {email, password} | JWT token |
 | POST | `/files/upload` | Upload a file | Yes | file - {chosen file} | {message, public_url} |
-
-| Method | Endpoint | Description | Authentication | Query | Response |
-|--------|----------|-------------|----------------|-------|------|
 | GET | `/files/search` | Search for files | Yes | nil/ file_id/ file_name/ file_type | {file_id, name, path, user_id, created_at} |
-| DELETE | `/files/delete` | Delete a file | Yes | file_id | response message |
-| GET | `/files/share` | Get a shareable link | Yes | file_id | public_url |
-| GET | `/files/access/{file_id}` | Serves public_url of files | No | file_id | decrypted_file_requested |
+| DELETE | `/files/delete` | Delete a file | Yes | file_id | Response message |
+| GET | `/files/share` | Get a shareable link | Yes | file_id | Public URL |
+| GET | `/files/access/{file_id}` | Serve file | No | file_id | Decrypted file requested |
 
 ## 🛡️ Security Features
 
@@ -183,64 +189,70 @@ shareit/
 - [ ] Websockets for notifications
 - [x] Containerization with Docker
 - [ ] Hosting on AWS 
----
 
-## Project Functionality: Documentation
+## Project Functionality / Documentation
 
-## Login/SignUp - JWT Authentication 
+### Login/SignUp - JWT Authentication
+
 - `auth` package:
     - `func GenerateJWT(email string)` 
-        - generates jwt Token
+        - Generates JWT Token
     - `func ValidateJWT(tokenString string)`
-        - validates jwt token 
+        - Validates JWT token 
 
-## Database: SQL SCHEMA
+### Database: SQL Schema
+
 ![image](https://github.com/user-attachments/assets/ebe2e84b-9a11-4bd9-b523-dca30f6c3dcb)
 
 - `db` package:
-    - `func ConnectDB() ` 
-        - establishes and validates connection to MySQL db
+    - `func ConnectDB()` 
+        - Establishes and validates connection to MySQL database
 
+### File Storage and Management
 
-## File storage and Management
-- Local Storage is being used as AWS S3 needs credit card, Google Firebase doesnt have good SDK for Golang
-
+- Local storage is used; AWS S3 requires a credit card, and Google Firebase lacks a good SDK for Go.
 
 - `files` package:
     - `func SaveFile(w http.ResponseWriter, r *http.Request, userID int)` 
-        - for file uploads
-        - sets file metadata in Database
-        - encrypts file 
-        - stores file in storage
-    -  `func SearchFile(w http.ResponseWriter, r *http.Request, userID int)` 
-        - searches for file with query parameters of http request: 
-        - `nil` : returns all files created by users
-        - `file_id`, `file_name`, `file_type`, `created_at` (all together of any combination): returns files satisfying the filters
+        - Handles file uploads
+        - Sets file metadata in the database
+        - Encrypts the file 
+        - Stores the file in local storage
+    - `func SearchFile(w http.ResponseWriter, r *http.Request, userID int)` 
+        - Searches for files based on query parameters:
+        - `nil`: Returns all files created by users
+        - `file_id`, `file_name`, `file_type`, `created_at`: Returns files matching the filters
     - `func ShareFile(w http.ResponseWriter, r *http.Request, userID int)` 
-        - returns a publicly accessible url of the requested file with query parameter `file_id`
+        - Returns a publicly accessible URL for the requested file with query parameter `file_id`
     - `func ServeFile(w http.ResponseWriter, r *http.Request)` 
-        - serves the file when users want to access file
-        - decrypts and serves the requested files 
+        - Serves the file upon request
+        - Decrypts and serves the requested files 
     - `func DeleteFile(w http.ResponseWriter, r *http.Request, userID int)` 
-        - deletes the file's Metadata from Database and file from Storage with `file_id`
+        - Deletes the file's metadata from the database and the file from storage using `file_id`
     - `func EncryptFile(file multipart.File, key []byte)` 
-        - uses AES encryption to encrypt the file 
+        - Uses AES encryption to encrypt the file 
     - `func DecryptFile(encryptedData []byte, key []byte)`
-        - uses AES decryption to decrypt the encrypted file
+        - Uses AES decryption to decrypt the encrypted file
 
+### Redis Layer
 
-## Redis layer
 - `db` package:
-    - `func RateLimit(userID int)` returns `true` if requests are within limit number or `false`
-    - ` func ConnectRedis() ` checks and validates connection with Redis server (Upstash)
-    - `func CacheFileMetadata(fileID int, metadata string)` sets metadata cache of the file `fileId`, metadata `metadata`
-    -  `func GetCachedFileMetadata(fileID int)` returns metadata of file with `fileId` if present in cache
+    - `func RateLimit(userID int)` 
+        - Returns `true` if requests are within the limit number, otherwise `false`
+    - `func ConnectRedis()` 
+        - Checks and validates connection with Redis server (Upstash)
+    - `func CacheFileMetadata(fileID int, metadata string)` 
+        - Sets metadata cache for the file with `
 
+fileID` and `metadata`
+    - `func GetCachedFileMetadata(fileID int)` 
+        - Returns metadata of the file with `fileID` if present in cache
 
-## Background worker
-- runs `cleanupOldFiles()` every `$env:CLEANUP_INTERVAL` to clean up expired files
+### Background Worker
+
+- Runs `cleanupOldFiles()` every `$env:CLEANUP_INTERVAL` to clean up expired files
 
 - `func cleanupOldFiles(expiryDuration time.Duration)` 
-    - cleans files that have expired: from Database (metadata) and from Storage
-- `func deleteOldFilesFromStorage(cutoffTime time.Time)`
-    - deletes files from Local Storage
+    - Cleans up files that have expired: from the database (metadata) and from local storage
+- `func deleteOldFilesFromStorage(cutoffTime time.Time)` 
+    - Deletes files from local storage
