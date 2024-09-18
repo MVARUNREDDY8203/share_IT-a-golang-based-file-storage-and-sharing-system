@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"log"
-	"strconv"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -33,11 +32,10 @@ func ConnectRedis() {
 }
 
 // CacheFileMetadata caches file metadata
-func CacheFileMetadata(fileID int, metadata string) error {
-	return RedisClient.Set(Ctx, strconv.Itoa(fileID), metadata, 10*time.Minute).Err()
+func CacheFileMetadata(fileID string, metadata string) error {
+    return RedisClient.Set(Ctx, fileID, metadata, 10*time.Minute).Err()
 }
 
-// GetCachedFileMetadata retrieves cached file metadata
-func GetCachedFileMetadata(fileID int) (string, error) {
-	return RedisClient.Get(Ctx, strconv.Itoa(fileID)).Result()
+func GetCachedFileMetadata(fileID string) (string, error) {
+    return RedisClient.Get(Ctx, fileID).Result()
 }
