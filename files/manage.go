@@ -129,24 +129,15 @@ func ShareFile(w http.ResponseWriter, r *http.Request, userID int) {
 }
 
 
-
 // ShareFile allows users to get the sharable URL of a file based on file_id
 func ServeFile(w http.ResponseWriter, r *http.Request) {
     vars := mux.Vars(r)
     fileID := vars["file_id"]
 
-    // Check if file path is cached
-    cachedFilePath, err := db.GetCachedFileMetadata(fileID)
-    if err == nil {
-        // Cache hit: Use the cached file path
-        serveFileFromPath(w, cachedFilePath, fileID)
-        return
-    }
-
-    // If cache is missed, query the database
+    // Get the encrypted file path from the database
     var encryptedFilePath string
     var originalFilename string
-    err = db.DB.QueryRow("SELECT file_path, filename FROM files WHERE id = ?", fileID).Scan(&encryptedFilePath, &originalFilename)
+    err := db.DB.QueryRow("SELECT file_path, filename FROM files WHERE id = ?", fileID).Scan(&encryptedFilePath, &originalFilename)
     if err == sql.ErrNoRows {
         log.Println("File not found:", err)
         http.Error(w, "File not found", http.StatusNotFound)
@@ -157,16 +148,8 @@ func ServeFile(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    // Cache the file path for future requests
-    db.CacheFileMetadata(fileID, encryptedFilePath)
-
-    // Serve the file from the file path
-    serveFileFromPath(w, encryptedFilePath, fileID)
-}
-
-// Helper function to serve file from a given path
-func serveFileFromPath(w http.ResponseWriter, filePath string, fileID string) {
-    encryptedData, err := os.ReadFile(filePath)
+    // Read the encrypted file content
+    encryptedData, err := os.ReadFile(encryptedFilePath)
     if err != nil {
         log.Println("Error reading encrypted file:", err)
         http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -174,7 +157,7 @@ func serveFileFromPath(w http.ResponseWriter, filePath string, fileID string) {
     }
 
     // Decrypt the file content
-    encryptionKey := []byte("this_is_a_32_byte_key_for_aes_on")
+    encryptionKey := []byte("this_is_a_32_byte_key_for_aes_on") // Ensure you use the correct key
     decryptedData, err := DecryptFile(encryptedData, encryptionKey)
     if err != nil {
         log.Println("Error decrypting file:", err)
@@ -182,12 +165,18 @@ func serveFileFromPath(w http.ResponseWriter, filePath string, fileID string) {
         return
     }
 
-    w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=file_%s", fileID))
+    // Serve the decrypted content with the original filename
+    w.Header().Set("Content-Disposition", "attachment; filename="+originalFilename)
     w.Header().Set("Content-Type", "application/octet-stream")
     w.Header().Set("Content-Length", fmt.Sprintf("%d", len(decryptedData)))
 
-    w.Write(decryptedData)
+    // Write the decrypted content to the response
+    _, err = w.Write(decryptedData)
+    if err != nil {
+        log.Println("Error serving decrypted file:", err)
+    }
 }
+
 
 // DeleteFile allows users to delete their files
 func DeleteFile(w http.ResponseWriter, r *http.Request, userID int) {
