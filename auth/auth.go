@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"shareit/db"
+	"shareit/rate_limiter"
 
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -112,6 +113,11 @@ func RequireAuth(next func(w http.ResponseWriter, r *http.Request, userID int)) 
 			return
 		}
 
+		// Apply rate limiting
+		if !rate_limiter.RateLimit(userID) {
+			http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
+			return
+		}
 		// Call the next handler, passing userID
 		next(w, r, userID)
 	}
