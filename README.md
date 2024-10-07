@@ -1,6 +1,7 @@
 # [ShareIt: Secure File Storage and Sharing Service](https://youtu.be/IJ_FZvZxCK8) 🚀
 
 ### [demonstration of working - video](https://youtu.be/IJ_FZvZxCK8)
+![image](https://github.com/user-attachments/assets/c082d530-bbe3-4d86-ad37-53d946ab1d5d)
 
 ShareIt: a robust and secure file sharing service built with Go, designed to provide users with a safe and efficient way to upload, store, and share files.
 
